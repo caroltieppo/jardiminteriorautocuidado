@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jardim Interior • Flor em Teu Ser</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            roseclay: {
+              50: '#fdf9f7',
+              100: '#f8eee8',
+              200: '#f1ddd3',
+              300: '#e5c2b3',
+              400: '#d59e89',
+              500: '#c2795f',
+              600: '#ab6047',
+              700: '#8e4c36',
+              800: '#763f2d',
+              900: '#613626',
+            },
+            botanical: {
+              50: '#f5f7f5',
+              100: '#e7ede7',
+              200: '#d1ddd1',
+              300: '#adc2ae',
+              400: '#83a285',
+              500: '#628565',
+              600: '#4c6b4f',
+              700: '#3d5440',
+              800: '#334435',
+              900: '#2a372c',
+            },
+            parchment: {
+              50: '#fbfaf8',
+              100: '#f5f3ee',
+              200: '#ebe6dd',
+              300: '#ded5c5',
+            }
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      background: radial-gradient(circle at 10% 20%, #fdf9f7 0%, #f7f4ee 50%, #f0ece3 100%);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #2b3330;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app-viewport {
+      border: 1px solid rgba(222, 213, 197, 0.8);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .fade-step-enter {
+      animation: fadeInStep 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeInStep {
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.99);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #fbfaf8;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #d1ddd1;
+      border-radius: 999px;
+    }
+  </style>
+
+  <!-- Import Map Standard do Navegador (ESM) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.344.0"
+      }
+    }
+  </script>
+
+  <!-- Babel Standalone para JSX no Browser -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="min-h-screen py-2 sm:py-6 px-2 sm:px-4 flex items-start justify-center">
+
+  <div id="root" class="w-full max-w-xl"></div>
+
+  <script type="text/babel" data-type="module">
+    import React, { useState, useEffect, useMemo, useRef } from 'react';
+    import { createRoot } from 'react-dom/client';
+    import { 
+      Heart, 
+      ArrowRight, 
+      ArrowLeft, 
+      RotateCcw, 
+      MessageCircle, 
+      Instagram, 
+      Flower2, 
+      Compass, 
+      Sun, 
+      CloudRain, 
+      Wind, 
+      Sparkles, 
+      Home, 
+      Activity, 
+      CheckCircle2, 
+      Layers, 
+      ShieldCheck,
+      Droplets,
+      Clock
+    } from 'lucide-react';
+
+    const innerGardenQuestions = [
+      {
+        id: 'clima_mental',
+        stepNumber: 1,
+        stageTitle: 'Etapa 1 de 5 • O Clima dos Seus Pensamentos',
+        headline: 'Ao acordar ou ao se deitar, qual tem sido a paisagem da sua mente?',
+        subtitle: 'Olhe com gentileza para o fluxo dos seus dias recentes:',
+        options: [
+          {
+            id: 'nuvem_acelerada',
+            icon: '🌪️',
+            title: 'Mente hiperativa com lista infinita de afazeres',
+            desc: 'Um turbilhão que não desliga, antecipando problemas futuros e sentindo que o tempo nunca é suficiente.'
+          },
+          {
+            id: 'nevoeiro_pesado',
+            icon: '🌫️',
+            title: 'Cansaço mental denso, com dificuldade de foco',
+            desc: 'A sensação de mente sobrecarregada, como se processar qualquer nova informação exigisse um esforço imenso.'
+          },
+          {
+            id: 'sensibilidade_aberta',
+            icon: '🍃',
+            title: 'Absorvendo o clima e a ansiedade de quem está ao redor',
+            desc: 'Sinto que sou uma esponja emocional: qualquer conflito ou pressa no ambiente afeta meu centro de calma.'
+          }
+        ]
+      },
+      {
+        id: 'sinais_corpo',
+        stepNumber: 2,
+        stageTitle: 'Etapa 2 de 5 • O Corpo que Sustenta Tudo',
+        headline: 'Onde o seu corpo tem registrado os primeiros sinais de sobrecarga?',
+        subtitle: 'O corpo é a raiz sincera que avisa quando o solo está seco:',
+        options: [
+          {
+            id: 'ombros_tensao',
+            icon: '🎒',
+            title: 'Tensão nos ombros, mandíbula travada ou pescoço rígido',
+            desc: 'Como se estivesse carregando uma mochila invisível cheia das responsabilidades do mundo inteiro.'
+          },
+          {
+            id: 'peito_respiracao',
+            icon: '🫁',
+            title: 'Respiração curta, suspiros frequentes ou nó no peito',
+            desc: 'Uma sensação de pressa interna que aperta o peito, mesmo quando estou em momentos que deveriam ser de descanso.'
+          },
+          {
+            id: 'sono_esgotamento',
+            icon: '🌙',
+            title: 'Sono não reparador ou cansaço que não passa ao dormir',
+            desc: 'Acordo sem energia vital, como se a bateria estivesse sempre em modo de economia.'
+          }
+        ]
+      },
+      {
+        id: 'vaso_esvaziado',
+        stepNumber: 3,
+        stageTitle: 'Etapa 3 de 5 • A Roda dos Vasos de Cuidado',
+        headline: 'Qual destes quatro pilares essenciais tem ficado mais abandonado na sua rotina?',
+        subtitle: 'Para uma planta florescer, a terra precisa ser nutrida por inteiro:',
+        options: [
+          {
+            id: 'pausa_silencio',
+            icon: '🕯️',
+            title: 'Pausa Real & Silêncio sem Culpa',
+            desc: 'Faz muito tempo que não me permito parar 15 minutos sem estar produzindo, limpando ou resolvendo algo.'
+          },
+          {
+            id: 'limites_nao',
+            icon: '🛡️',
+            title: 'Espaço Próprio e Coragem de Dizer "Não"',
+            desc: 'Digo sim para atender a todos, acolho as urgências alheias e me coloco sempre no final da fila da minha própria vida.'
+          },
+          {
+            id: 'nutricao_prazer',
+            icon: '🌸',
+            title: 'Leveza, Alegria Espontânea e Contato com a Natureza',
+            desc: 'Minha vida virou uma sucessão de obrigações sérias; perdi o contato com o que me traz frescor e riso solto.'
+          }
+        ]
+      },
+      {
+        id: 'papel_outro',
+        stepNumber: 4,
+        stageTitle: 'Etapa 4 de 5 • A Postura Diante das Relações',
+        headline: 'Como você costuma se posicionar diante das pessoas que você ama ou convive?',
+        subtitle: 'Muitas vezes, a raiz do nosso cansaço está na forma como cuidamos do outro:',
+        options: [
+          {
+            id: 'cuidadora_incansavel',
+            icon: '🤲',
+            title: 'A que cuida, resolve e apoia, mas tem dificuldade imensa de pedir ou receber ajuda',
+            desc: 'Sinto que se eu soltar as rédeas, tudo desmorona, então seguro o peso sozinha.'
+          },
+          {
+            id: 'evitadora_conflito',
+            icon: '🕊️',
+            title: 'Engulo o que sinto para manter a paz e não magoar ninguém',
+            desc: 'Guardo mágoas ou incômodos para não gerar atrito, e isso depois vira indigestão, aperto no peito ou angústia.'
+          },
+          {
+            id: 'exigente_consigo',
+            icon: '📐',
+            title: 'Cobrança interna implacável de ter que fazer tudo com perfeição',
+            desc: 'Tenho muita empatia com as falhas dos outros, mas comigo mesma sou uma juíza extremamente severa.'
+          }
+        ]
+      },
+      {
+        id: 'chamado_chegada',
+        stepNumber: 5,
+        stageTitle: 'Etapa 5 de 5 • Sua Intenção Aqui no Flor em Teu Ser',
+        headline: 'O que o seu coração mais gostaria de encontrar neste espaço?',
+        subtitle: 'Queremos te acolher com a medida exata do que você busca:',
+        options: [
+          {
+            id: 'respiro_acolhimento',
+            icon: '🌿',
+            title: 'Um refúgio para respirar, desacelerar e receber mensagens gentis de autocuidado',
+            desc: 'Quero lembretes de desaceleração e práticas naturais para trazer mais harmonia ao meu dia a dia.'
+          },
+          {
+            id: 'compreensao_floral',
+            icon: '💧',
+            title: 'Entender como a terapia floral e os florais de Bach podem me apoiar nessa fase',
+            desc: 'Sinto que preciso de um suporte mais profundo para minhas emoções e gostaria de compreender como começar.'
+          },
+          {
+            id: 'conversa_orientacao',
+            icon: '💬',
+            title: 'Poder desabafar com alguém de confiança e receber um direcionamento de cuidado com alma',
+            desc: 'Quero compartilhar o momento desafiador que estou vivendo e saber quais os caminhos possíveis para mim.'
+          }
+        ]
+      }
+    ];
+
+    const innerProfilesConfig = {
+      solo_sobrecarregado: {
+        tag: 'Seu Diagnóstico de Momento',
+        title: 'A Guardiã do Cuidado Alheio (Solo Pedindo Descompressão)',
+        badge: 'Fase: Resgate Urgente de Limites & Descanso',
+        themeColor: 'roseclay',
+        icon: ShieldCheck,
+        resumo: 'Você tem sido a fortaleza que tudo sustenta, mas seu corpo e sua mente estão sinalizando que o limite foi atingido. Cuidar de si não é egoísmo, é a condição para que a sua própria raiz não seque.',
+        sinteseEmocional: 'Há um padrão evidente de segurar responsabilidades em excesso, dificuldade em delegar e uma autocobrança que transforma até o repouso em culpa. Seu cansaço não é preguiça: é o peso acumulado de ser forte por tempo demais.',
+        rodaAutocuidadoAlerta: 'Pausa Real sem Culpa & Limites Saudáveis',
+        reflexaoAcolhedora: 'O equilíbrio emocional genuíno começa quando você se permite soltar as exigências que não lhe pertencem. Na terapia floral, aprendemos que cada ser humano possui um ritmo próprio e que você não precisa carregar o mundo para ter direito ao descanso e à serenidade.',
+        microPratica: 'Hoje, escolha apenas UMA pequena coisa que você faz no piloto automático pelos outros e se dê a permissão de não fazer ou de pedir ajuda. Solte os ombros agora e sinta o ar preencher seus pulmões.',
+        perguntaParaConversa: 'Você percebe que está no limite de sustentar tudo sozinha e gostaria de um espaço seguro para soltar essa carga?'
+      },
+      vento_agitado: {
+        tag: 'Seu Diagnóstico de Momento',
+        title: 'A Mente em Turbilhão (Solo Pedindo Ancoragem & Calma)',
+        badge: 'Fase: Desaceleração Mental & Presença no Agora',
+        themeColor: 'botanical',
+        icon: Wind,
+        resumo: 'Seus pensamentos têm corrido mais rápido do que o seu corpo é capaz de acompanhar. O amanhã tem roubado a paz do único instante onde a vida realmente acontece: o presente.',
+        sinteseEmocional: 'A mente tenta controlar o futuro para se sentir segura, mas esse excesso de antecipação gera respiração curta, noites mal dormidas e um desgaste invisível da energia vital.',
+        rodaAutocuidadoAlerta: 'Silêncio Interior & Conexão com o Corpo',
+        reflexaoAcolhedora: 'A serenidade interior se fortalece quando paramos de lutar contra o fluxo do tempo. A terapia floral olha para esse estado com profunda gentileza, oferecendo caminhos sutis para ancorar seus pensamentos e permitir que seu sistema nervoso retorne a um ritmo compassado e tranquilo.',
+        microPratica: 'Coloque a palma da mão direita no centro do seu peito e a mão esquerda no abdômen. Respire profundamente por 4 ciclos, sentindo o calor do seu corpo. Lembre-se: por este minuto, está tudo bem soltar.',
+        perguntaParaConversa: 'Sua mente tem ficado em turbilhão constante e você sente que precisa de apoio para reencontrar o silêncio interior?'
+      },
+      sensibilidade_desejosa: {
+        tag: 'Seu Diagnóstico de Momento',
+        title: 'O Coração em Travessia (Solo Pedindo Nutrição & Escuta)',
+        badge: 'Fase: Clareza Interior & Acolhimento das Emoções',
+        themeColor: 'roseclay',
+        icon: Flower2,
+        resumo: 'Você está vivendo um momento de transição, dúvida ou sensibilidade aflorada. Suas emoções não estão "erradas" ou "fracas" — elas são um mapa indicando que um novo ciclo quer nascer em você.',
+        sinteseEmocional: 'Há uma busca por clareza de rumo e por relações mais autênticas. Guardar o que sente para não incomodar os outros acabou acumulando um aperto no peito que pede escuta afetuosa e sem julgamentos.',
+        rodaAutocuidadoAlerta: 'Nutrição Emocional, Leveza & Expressão Autêntica',
+        reflexaoAcolhedora: 'Os períodos de maior sensibilidade revelam que a sua alma está pedindo um olhar cuidadoso para dentro. Com o amparo da terapia floral e dos florais de Bach, esse momento de recolhimento pode se transformar em um solo fértil de reconexão e clareza sobre quem você é.',
+        microPratica: 'Pegue um copo com água fresca. Beba em pequenos goles, fechando os olhos por alguns instantes, mentalizando que a água lava as tensões e devolve a frescura que você tanto merece hoje.',
+        perguntaParaConversa: 'Você está sentindo esse chamado para se escutar de verdade e quer entender como a terapia floral e os florais de Bach podem te amparar nessa travessia?'
+      }
+    };
+
+    function App() {
+      // Estágios: 'intro' | 'questions' | 'result'
+      const [stage, setStage] = useState('intro');
+      const [currentQIndex, setCurrentQIndex] = useState(0);
+      const [answers, setAnswers] = useState({});
+      const [calculatedProfileKey, setCalculatedProfileKey] = useState('solo_sobrecarregado');
+      const [copiedText, setCopiedText] = useState(false);
+      const appTopRef = useRef(null);
+
+      // Seu número oficial configurado
+      const WHATSAPP_PHONE = '5511945774966';
+
+      // Rolar suavemente para o topo do aplicativo
+      const scrollToTop = () => {
+        if (appTopRef.current) {
+          appTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      };
+
+      useEffect(() => {
+        scrollToTop();
+      }, [stage, currentQIndex]);
+
+      // Carregar progresso salvo localmente
+      useEffect(() => {
+        try {
+          const saved = localStorage.getItem('jardim_interior_autocuidado_save');
+          if (saved) {
+            const data = JSON.parse(saved);
+            if (data.answers && Object.keys(data.answers).length >= 3) {
+              setAnswers(data.answers);
+              setCalculatedProfileKey(data.profileKey || 'solo_sobrecarregado');
+            }
+          }
+        } catch (e) {
+          console.warn('Storage indisponível');
+        }
+      }, []);
+
+      const saveProgress = (ans, profKey) => {
+        try {
+          localStorage.setItem('jardim_interior_autocuidado_save', JSON.stringify({
+            answers: ans,
+            profileKey: profKey,
+            updatedAt: new Date().toISOString()
+          }));
+        } catch (e) {}
+      };
+
+      // Cálculo do perfil com base no cruzamento das 5 respostas
+      const evaluateProfile = (ans) => {
+        const r1 = ans['clima_mental'];
+        const r2 = ans['sinais_corpo'];
+        const r3 = ans['vaso_esvaziado'];
+        const r4 = ans['papel_outro'];
+
+        if (r3 === 'limites_nao' || r4 === 'cuidadora_incansavel' || r2 === 'ombros_tensao') {
+          return 'solo_sobrecarregado';
+        }
+        if (r1 === 'nuvem_acelerada' || r2 === 'peito_respiracao' || r3 === 'pausa_silencio') {
+          return 'vento_agitado';
+        }
+        return 'sensibilidade_desejosa';
+      };
+
+      const handleSelectOption = (questionId, optionId) => {
+        const nextAnswers = { ...answers, [questionId]: optionId };
+        setAnswers(nextAnswers);
+
+        if (currentQIndex < innerGardenQuestions.length - 1) {
+          setCurrentQIndex(prev => prev + 1);
+        } else {
+          const finalProfile = evaluateProfile(nextAnswers);
+          setCalculatedProfileKey(finalProfile);
+          saveProgress(nextAnswers, finalProfile);
+          setStage('result');
+        }
+        scrollToTop();
+      };
+
+      const handlePreviousQuestion = () => {
+        if (currentQIndex > 0) {
+          setCurrentQIndex(prev => prev - 1);
+        } else {
+          setStage('intro');
+        }
+        scrollToTop();
+      };
+
+      const handleRestart = () => {
+        setAnswers({});
+        setCurrentQIndex(0);
+        setStage('intro');
+        scrollToTop();
+        try {
+          localStorage.removeItem('jardim_interior_autocuidado_save');
+        } catch (e) {}
+      };
+
+      const activeProfile = useMemo(() => {
+        return innerProfilesConfig[calculatedProfileKey] || innerProfilesConfig.solo_sobrecarregado;
+      }, [calculatedProfileKey]);
+
+      const currentQuestion = innerGardenQuestions[currentQIndex];
+      const progressPercent = Math.round(((currentQIndex + 1) / innerGardenQuestions.length) * 100);
+
+      const handleOpenWhatsapp = (e) => {
+        if (e) e.preventDefault();
+
+        const messageText = `Olá! 🌸 Vim através do mini-app "Jardim Interior" no Flor em Teu Ser.
+
+Concluí minha pausa reflexiva e o meu momento atual deu:
+👉 *${activeProfile.title}*
+
+Minha área que mais pede rega hoje é: *${activeProfile.rodaAutocuidadoAlerta}*.
+Gostaria muito de conversar com você, contar um pouco do que estou vivendo e saber como posso começar a cuidar melhor de mim!`;
+
+        const encodedMsg = encodeURIComponent(messageText);
+        const targetUrl = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${encodedMsg}`;
+
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          window.location.href = targetUrl;
+        } else {
+          window.open(targetUrl, '_blank', 'noopener,noreferrer');
+        }
+      };
+
+      const copyInstagramText = () => {
+        const text = `Olá! 🌸 Fiz a vivência no mini-app Jardim Interior do Flor em Teu Ser e meu momento deu: "${activeProfile.title}". Gostaria de trocar uma mensagem com você sobre como trazer mais equilíbrio para o meu momento!`;
+        const el = document.createElement('textarea');
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        try {
+          document.execCommand('copy');
+          setCopiedText(true);
+          setTimeout(() => setCopiedText(false), 3000);
+        } catch (err) {}
+        document.body.removeChild(el);
+      };
+
+      return (
+        <div ref={appTopRef} className="w-full flex flex-col min-h-[92vh] sm:min-h-[88vh] justify-between">
+          
+          {/* Card Central com Estética Orgânica & Clean Premium */}
+          <div className="app-viewport rounded-[2.2rem] shadow-2xl shadow-roseclay-900/10 p-5 sm:p-7 transition-all flex-1 pb-24 relative overflow-hidden">
+
+            {/* Top Bar do Mini-App */}
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-parchment-200/80 text-slate-500">
+              <div className="flex items-center gap-1.5 text-[11px] font-medium tracking-wide">
+                <span className="w-2 h-2 rounded-full bg-roseclay-500 animate-pulse"></span>
+                <span>Espaço de Escuta & Presença</span>
+              </div>
+              <div className="text-[11px] font-mono text-roseclay-700 bg-roseclay-50 px-2.5 py-0.5 rounded-full border border-roseclay-200/60 font-semibold">
+                Flor em Teu Ser
+              </div>
+            </div>
+
+            {/* Selo Editorial */}
+            <div className="text-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-roseclay-100/70 text-roseclay-800 text-[11px] font-semibold tracking-wide border border-roseclay-200/50">
+                <Flower2 className="w-3.5 h-3.5 text-roseclay-600" />
+                <span>Flor em Teu Ser • Jardim Interior</span>
+              </div>
+            </div>
+
+            {/* BANNER REALISTA & ACOLHEDOR (NATUREZA, XÍCARA DE CHÁ, LUZ NATURAL, PAZ) */}
+            <div className="mt-3.5 mb-5 rounded-2xl overflow-hidden relative shadow-sm border border-parchment-200/90 group">
+              <div className="h-36 sm:h-44 w-full relative flex items-center justify-between overflow-hidden bg-parchment-200">
+                <img 
+                  src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80" 
+                  alt="Momento sereno de pausa com luz do sol, folhas suaves e calma"
+                  className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80";
+                  }}
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-r from-stone-900/85 via-stone-900/65 to-transparent sm:to-stone-900/20 backdrop-blur-[0.5px]"></div>
+
+                <div className="relative z-10 px-5 sm:px-7 max-w-[290px] sm:max-w-sm text-left text-white">
+                  <span className="inline-block text-[10px] uppercase font-bold tracking-widest text-roseclay-200 bg-stone-900/60 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/15 mb-1.5">
+                    Pausa Sagrada para Você
+                  </span>
+                  <h2 className="text-sm sm:text-base font-serif font-medium text-white leading-snug drop-shadow-sm">
+                    Antes de cuidar de tudo, como está a sua raiz hoje?
+                  </h2>
+                  <p className="text-[11px] text-stone-200/90 mt-1 leading-relaxed hidden sm:block">
+                    Sem receitas prontas. Sem diagnósticos frios. Um espaço seguro de acolhimento.
+                  </p>
+                </div>
+
+                <div className="absolute right-3.5 bottom-3 z-10 hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-900/60 backdrop-blur-md border border-white/10 text-[10px] text-stone-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-roseclay-400"></span>
+                  <span>Refúgio de Autocuidado</span>
+                </div>
+              </div>
+            </div>
+
+            {/* ETAPA 1: TELA INICIAL (BOAS-VINDAS & PROPÓSITO) */}
+            {stage === 'intro' && (
+              <div className="space-y-4 fade-step-enter">
+                <div className="text-center space-y-2">
+                  <h1 className="text-xl sm:text-2xl font-serif font-bold text-slate-800 leading-snug">
+                    Você já parou para se ouvir com gentileza hoje?
+                  </h1>
+                  <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+                    Muitas vezes chegamos ao final do dia com o corpo tenso e a mente acelerada, sem conseguir dar nome ao que realmente pesa. Este mini-app é o seu <strong>momento de respiro</strong> para mapear seu clima interior e entender onde a sua rotina pede mais nutrição.
+                  </p>
+                </div>
+
+                {/* 3 Cartões Rápidos de Acolhimento */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+                  <div className="p-3 bg-white rounded-xl border border-parchment-200 flex items-center gap-2.5 shadow-xs">
+                    <span className="text-base">🫁</span>
+                    <div className="text-[11px] text-slate-700 font-medium">Reconhecer os sinais do seu corpo</div>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl border border-parchment-200 flex items-center gap-2.5 shadow-xs">
+                    <span className="text-base">🪴</span>
+                    <div className="text-[11px] text-slate-700 font-medium">Identificar o que pede rega urgente</div>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl border border-parchment-200 flex items-center gap-2.5 shadow-xs">
+                    <span className="text-base">🌸</span>
+                    <div className="text-[11px] text-slate-700 font-medium">Escuta com afeto, sem fórmulas frias</div>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-botanical-50/70 border border-botanical-200/70 text-center text-xs text-botanical-900 leading-relaxed">
+                  <strong>5 Perguntas Reflexivas:</strong> Responda sem pressa. Não há respostas certas ou erradas — apenas a verdade sincera do seu momento atual.
+                </div>
+
+                <button
+                  onClick={() => setStage('questions')}
+                  className="w-full py-3.5 px-5 rounded-2xl bg-roseclay-600 hover:bg-roseclay-700 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-roseclay-600/20 transition-all duration-300 hover:scale-[1.01] active:scale-95"
+                >
+                  Iniciar Minha Pausa de Escuta <ArrowRight className="w-4 h-4" />
+                </button>
+
+                {answers['clima_mental'] && (
+                  <div className="text-center pt-1">
+                    <button
+                      onClick={() => setStage('result')}
+                      className="text-xs text-roseclay-700 hover:text-roseclay-900 underline font-medium"
+                    >
+                      Acessar meu último acolhimento salvo
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ETAPA 2: O MAPEAMENTO REFLEXIVO (5 PERGUNTAS) */}
+            {stage === 'questions' && (
+              <div className="space-y-4 fade-step-enter">
+                
+                {/* Progresso do Mini-App */}
+                <div className="space-y-1.5 pb-1">
+                  <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600">
+                    <span className="text-botanical-800 bg-botanical-100/80 px-2.5 py-0.5 rounded-md">
+                      {currentQuestion.stageTitle}
+                    </span>
+                    <span className="font-mono text-roseclay-700 font-bold">
+                      {progressPercent}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-parchment-200 h-1.5 rounded-full overflow-hidden">
+                    <div 
+                      className="bg-roseclay-500 h-full rounded-full transition-all duration-300 ease-out"
+                      style={{ width: `${progressPercent}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Título da Pergunta */}
+                <div className="space-y-1">
+                  <h2 className="text-base sm:text-lg font-serif font-semibold text-slate-900 leading-snug">
+                    {currentQuestion.headline}
+                  </h2>
+                  <p className="text-[11px] sm:text-xs text-slate-500">
+                    {currentQuestion.subtitle}
+                  </p>
+                </div>
+
+                {/* Opções Clicáveis */}
+                <div className="space-y-2 pt-1">
+                  {currentQuestion.options.map((option) => {
+                    const isSelected = answers[currentQuestion.id] === option.id;
+                    return (
+                      <button
+                        key={option.id}
+                        onClick={() => handleSelectOption(currentQuestion.id, option.id)}
+                        className={`w-full p-3.5 rounded-2xl border text-left transition-all duration-200 group flex items-start gap-3 ${
+                          isSelected
+                            ? 'border-roseclay-500 bg-roseclay-50/90 shadow-xs'
+                            : 'border-parchment-200 bg-white hover:border-roseclay-300 hover:bg-roseclay-50/30'
+                        }`}
+                      >
+                        <span className="text-xl shrink-0 p-1 bg-parchment-100 rounded-xl group-hover:scale-105 transition-transform">
+                          {option.icon}
+                        </span>
+                        <div className="flex-1">
+                          <h4 className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-roseclay-800 transition-colors">
+                            {option.title}
+                          </h4>
+                          <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                            {option.desc}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Retorno de Pergunta */}
+                <div className="flex items-center justify-between pt-2 border-t border-parchment-200/60">
+                  <button
+                    onClick={handlePreviousQuestion}
+                    className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 font-medium px-2.5 py-1.5 rounded-lg hover:bg-parchment-100 transition-colors"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" /> Voltar anterior
+                  </button>
+                  <span className="text-[11px] text-slate-400">
+                    Passo {currentQIndex + 1} de {innerGardenQuestions.length}
+                  </span>
+                </div>
+
+              </div>
+            )}
+
+            {/* ETAPA 3: RESULTADO DO ACOLHIMENTO & PONTE PARA CONVERSA */}
+            {stage === 'result' && (
+              <div className="space-y-4 fade-step-enter">
+                
+                {/* Cartão do Perfil Interior */}
+                <div className="p-5 rounded-2xl bg-gradient-to-br from-white via-roseclay-50/70 to-parchment-100/50 border-2 border-roseclay-200 shadow-sm relative overflow-hidden">
+                  <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-roseclay-200/60">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-roseclay-700 bg-roseclay-100 px-2.5 py-0.5 rounded-full">
+                      {activeProfile.badge}
+                    </span>
+                    <span className="text-[11px] font-medium text-slate-500">
+                      Autoescuta Concluída
+                    </span>
+                  </div>
+
+                  <div className="pt-3 space-y-1.5">
+                    <h2 className="text-lg sm:text-xl font-serif font-bold text-slate-900 leading-snug">
+                      {activeProfile.title}
+                    </h2>
+                    <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                      {activeProfile.resumo}
+                    </p>
+                  </div>
+                </div>
+
+                {/* O Que o Seu Solo Emocional Está Revelando */}
+                <div className="p-4 rounded-xl bg-parchment-100/80 border border-parchment-200 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-roseclay-800 text-xs font-bold uppercase tracking-wider">
+                    <Heart className="w-4 h-4 text-roseclay-600 shrink-0" />
+                    <span>A Linguagem Oculta do Seu Momento</span>
+                  </div>
+                  <p className="text-xs text-slate-700 leading-relaxed">
+                    {activeProfile.sinteseEmocional}
+                  </p>
+                </div>
+
+                {/* Roda de Autocuidado: O Vaso que Pede Rega */}
+                <div className="p-4 rounded-xl bg-botanical-50/90 border border-botanical-200 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-botanical-900 text-xs font-bold uppercase tracking-wider">
+                      <Droplets className="w-4 h-4 text-botanical-600 shrink-0" />
+                      <span>Área que Mais Pede Nutrição & Rega:</span>
+                    </div>
+                    <span className="text-[10px] bg-botanical-200 text-botanical-900 font-bold px-2 py-0.5 rounded-full">
+                      Prioridade
+                    </span>
+                  </div>
+
+                  <div className="p-3 bg-white rounded-xl border border-botanical-200/80">
+                    <h4 className="text-xs font-bold text-botanical-900">
+                      🪴 {activeProfile.rodaAutocuidadoAlerta}
+                    </h4>
+                    <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                      {activeProfile.reflexaoAcolhedora}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Microprática de Gentileza do Dia */}
+                <div className="p-4 rounded-xl bg-white border border-parchment-200 space-y-1.5 shadow-xs">
+                  <div className="flex items-center gap-1.5 text-slate-800 text-xs font-bold uppercase tracking-wider">
+                    <Sparkles className="w-4 h-4 text-roseclay-600 shrink-0" />
+                    <span>Um Gesto Gentil para Hoje:</span>
+                  </div>
+                  <p className="text-xs text-slate-700 leading-relaxed">
+                    {activeProfile.microPratica}
+                  </p>
+                </div>
+
+                {/* CAIXA DE ACOLHIMENTO E CONVERSA HUMANA */}
+                <div className="p-5 rounded-2xl bg-gradient-to-br from-roseclay-50/90 via-white to-parchment-100 border border-roseclay-200 text-center space-y-3 shadow-sm">
+                  <div className="inline-block px-2.5 py-0.5 rounded-full bg-roseclay-100 text-roseclay-700 font-bold text-[10px] uppercase tracking-wider">
+                    🌸 Espaço Aberto de Escuta
+                  </div>
+
+                  <div className="space-y-1 max-w-sm mx-auto">
+                    <h3 className="text-sm sm:text-base font-serif font-bold text-slate-900">
+                      Gostaria de me contar como você está se sentindo?
+                    </h3>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      Não existe fórmula mágica ou resposta automática: cada ser humano tem um ritmo único. Me mande uma mensagem contando o seu momento para conversarmos com calma sobre como a terapia floral e os florais de Bach podem te amparar.
+                    </p>
+                  </div>
+
+                  {/* Botões de Ação */}
+                  <div className="pt-1 flex flex-col sm:flex-row gap-2.5 justify-center items-center">
+                    
+                    {/* Botão WhatsApp Direto */}
+                    <button
+                      type="button"
+                      onClick={handleOpenWhatsapp}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      <span>Conversar no WhatsApp com meu momento</span>
+                    </button>
+
+                    {/* Botão Instagram Direct */}
+                    <a
+                      href="https://instagram.com/floremteuser" 
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={copyInstagramText}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-rose-500 hover:opacity-95 text-white text-xs font-semibold shadow-md shadow-pink-500/15 transition-all hover:scale-[1.02] active:scale-95"
+                    >
+                      <Instagram className="w-4 h-4" />
+                      <span>{copiedText ? 'Texto Copiado! Abrindo @floremteuser' : 'Falar no Direct (@floremteuser)'}</span>
+                    </a>
+
+                  </div>
+
+                  {copiedText && (
+                    <p className="text-[11px] text-emerald-700 bg-emerald-50 py-1 px-3 rounded-lg border border-emerald-200 inline-block font-medium fade-step-enter">
+                      ✓ Mensagem copiada com sucesso! Ao abrir o Instagram, basta colar na DM.
+                    </p>
+                  )}
+
+                  <div className="pt-1">
+                    <button
+                      onClick={handleRestart}
+                      className="inline-flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-800 font-medium py-1 px-2.5 rounded-lg hover:bg-white transition-colors"
+                    >
+                      <RotateCcw className="w-3 h-3" /> Refazer autoescuta do início
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+          </div>
+
+          {/* BARRA DE NAVEGAÇÃO DE MINI-APP FIXA NO RODAPÉ */}
+          <nav className="sticky bottom-2 mt-2 w-full max-w-xl mx-auto rounded-2xl bg-white/95 backdrop-blur-md border border-parchment-200 shadow-lg shadow-slate-900/5 p-2 flex items-center justify-around z-30">
+            <button
+              onClick={() => setStage('intro')}
+              className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all text-[10px] font-medium ${
+                stage === 'intro' ? 'text-roseclay-700 font-bold bg-roseclay-50' : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              <Home className="w-4 h-4" />
+              <span>Início</span>
+            </button>
+
+            <button
+              onClick={() => {
+                if (stage === 'intro') setStage('questions');
+              }}
+              className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all text-[10px] font-medium ${
+                stage === 'questions' ? 'text-roseclay-700 font-bold bg-roseclay-50' : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              <Activity className="w-4 h-4" />
+              <span>Autoescuta</span>
+            </button>
+
+            <button
+              onClick={() => {
+                if (Object.keys(answers).length >= 3) {
+                  setStage('result');
+                }
+              }}
+              disabled={Object.keys(answers).length < 3 && stage !== 'result'}
+              className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all text-[10px] font-medium ${
+                stage === 'result'
+                  ? 'text-roseclay-700 font-bold bg-roseclay-50' 
+                  : Object.keys(answers).length >= 3 
+                    ? 'text-slate-700 hover:text-slate-900' 
+                    : 'text-slate-300 cursor-not-allowed'
+              }`}
+            >
+              <Flower2 className="w-4 h-4" />
+              <span>Acolhimento</span>
+            </button>
+
+            <button
+              onClick={handleOpenWhatsapp}
+              className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[10px] font-medium text-emerald-700 hover:bg-emerald-50 transition-colors cursor-pointer"
+            >
+              <MessageCircle className="w-4 h-4 text-emerald-600" />
+              <span>WhatsApp</span>
+            </button>
+          </nav>
+
+        </div>
+      );
+    }
+
+    const container = document.getElementById('root');
+    const root = createRoot(container);
+    root.render(<App />);
+  </script>
+</body>
+</html>
